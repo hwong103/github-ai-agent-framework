@@ -1,0 +1,5 @@
+GITHUB_WEBHOOK_SECRET=replace-with-webhook-secret
+GITHUB_APP_PRIVATE_KEY=replace-with-pkcs8-pem
+# PROJECTS_JSON maps project_id to validated project configuration.
+# PROJECTS_JSON={"my-app":{"repo":"owner/my-app","defaultBranch":"main",...}}
+PROJECTS_JSON={}
