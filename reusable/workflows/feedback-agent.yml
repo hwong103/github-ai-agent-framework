@@ -1,0 +1,44 @@
+name: Feedback agent draft fix
+
+on:
+  issues:
+    types: [opened, labeled]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: feedback-agent-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  draft-fix:
+    if: >-
+      contains(github.event.issue.labels.*.name, 'agent:ready') &&
+      (github.event.action == 'opened' || github.event.label.name == 'agent:ready') &&
+      !contains(github.event.issue.labels.*.name, 'agent:blocked')
+    # Register a dedicated ephemeral runner with all three labels. Never use a
+    # developer workstation that holds production credentials.
+    runs-on: [self-hosted, feedback-agent, ephemeral]
+    timeout-minutes: 45
+    env:
+      FEEDBACK_AGENT_MODEL: opencode-go/glm-5.2
+    steps:
+      - name: Check out the trusted default branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Build a draft fix on the trusted local runner
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          ./scripts/feedback-agent-run.ps1
+          -IssueNumber ${{ github.event.issue.number }}
+          -Repository '${{ github.repository }}'
+          -DefaultBranch '${{ github.event.repository.default_branch }}'
+          -DefaultModel '${{ env.FEEDBACK_AGENT_MODEL }}'

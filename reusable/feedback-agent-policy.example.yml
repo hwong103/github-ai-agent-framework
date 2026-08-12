@@ -1,0 +1,76 @@
+# Machine-readable contract shared by the shared triage Worker and the trusted
+# local runner. Copy this into the connected repository as
+# .github/feedback-agent-policy.yml and keep policy_version aligned with the
+# project's PROJECTS_JSON entry.
+schema_version: 1
+policy_version: "2026-08-12.1"
+marker_prefix: "diffindo-feedback-agent:"
+required_label: "agent:ready"
+blocked_label: "agent:blocked"
+draft_pr_only: true
+branch_template: "codex/feedback-{issue_number}"
+
+eligibility:
+  require:
+    - deterministic_narrow_ui_microfix
+    - single_clear_outcome
+    - low_blast_radius
+    - automated_verification_available
+  exclude:
+    - authentication_or_authorization
+    - security_or_privacy
+    - secrets_or_credentials
+    - payments_or_money_integrity
+    - user_or_financial_data
+    - network_or_external_integrations
+    - database_migrations
+    - data_deletion_or_destructive_operations
+    - infrastructure_or_deployment
+    - dependency_or_lockfile_changes
+    - broad_refactors
+    - ambiguous_product_or_design_decisions
+
+limits:
+  max_changed_files: 12
+  max_diff_lines: 600
+  max_issue_characters: 12000
+  max_screenshots: 1
+  max_screenshot_bytes_each: 4194304
+  stale_approval_days: 7
+
+models:
+  default: "opencode-go/glm-5.2"
+  visual: "opencode-go/kimi-k3"
+  narrow_fast: "opencode-go/deepseek-v4-flash"
+  selection_labels:
+    "agent:model:kimi-k3": "opencode-go/kimi-k3"
+    "agent:model:deepseek-v4-flash": "opencode-go/deepseek-v4-flash"
+
+verification:
+  - "npm run lint"
+  - "npm test"
+  - "npm run build"
+  - "diff secret scan"
+
+forbidden_paths:
+  - ".github/**"
+  - ".opencode/**"
+  - "d1/**"
+  - "scripts/**"
+  - "worker/**"
+  - "app/api/auth/**"
+  - "lib/auth*"
+  - "middleware.ts"
+  - "custom-worker.ts"
+  - "eslint.config.*"
+  - "next.config.*"
+  - "open-next.config.*"
+  - "postcss.config.*"
+  - "tsconfig.json"
+  - "wrangler*.json*"
+  - "package.json"
+  - "package-lock.json"
+  - ".env*"
+  - ".dev.vars*"
+  - ".git*"
+  - ".npmrc"

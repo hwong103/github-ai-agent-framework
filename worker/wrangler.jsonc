@@ -1,0 +1,56 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "github-ai-agent-framework",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "ai": {
+    "binding": "AI",
+    "remote": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "github-ai-agent-framework",
+      "database_id": "replace-with-d1-database-id",
+      "migrations_dir": "d1"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "FEEDBACK_BUCKET",
+      "bucket_name": "github-ai-agent-framework-feedback"
+    }
+  ],
+  "queues": {
+    "producers": [
+      {
+        "binding": "FEEDBACK_QUEUE",
+        "queue": "github-ai-agent-framework-feedback"
+      }
+    ],
+    "consumers": [
+      {
+        "queue": "github-ai-agent-framework-feedback",
+        "max_batch_size": 10,
+        "max_batch_timeout": 5,
+        "max_retries": 5,
+        "max_concurrency": 2
+      }
+    ]
+  },
+  "vars": {
+    "FEEDBACK_QUEUE_NAME": "github-ai-agent-framework-feedback",
+    "GITHUB_APP_ID": "",
+    "PROJECTS_JSON": "{}"
+  },
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true
+    }
+  },
+  "triggers": {
+    "crons": ["* * * * *"]
+  }
+}
